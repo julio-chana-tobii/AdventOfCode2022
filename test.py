@@ -38,7 +38,7 @@ class Directory:
                 size += child.get_size()
             return size
         else:
-            return self.size    
+            return self.size
     def is_dir(self):
         return self.isDir
     def __str__(self):
@@ -98,7 +98,7 @@ def December7P1(real_data):
                         print("directory "+ line[2] +" does not exist")
             elif line[1] == "ls":
                 print("list command")
-            
+
         elif "dir" in line:
             #print("dir")
             #split by spaces
@@ -128,7 +128,7 @@ def December7P1(real_data):
             #     sum+=int(line[0])
             #     print(line[0])
             pass
-    
+
     sum=0
     sum= GetRecursiveSmallSizeSum(headDirectory)
     print(sum)
@@ -167,7 +167,7 @@ def December7P2(real_data):
                         print("directory "+ line[2] +" does not exist")
             elif line[1] == "ls":
                 print("list command")
-            
+
         elif "dir" in line:
             #print("dir")
             #split by spaces
@@ -210,4 +210,202 @@ def December7P2(real_data):
         print(FindSmallestBigEnoughFileSize(headDirectory, requieredMemory,currentlyusedMemory))
 
 #December7P1(True)
-December7P2(True)
+#December7P2(True)
+
+def December8p1(realData):
+    #first readd the data
+    if realData == True:
+        input_file = open("December8Input.txt", "r")
+    else:
+        input_file = open("testInput", "r")
+    input_data = input_file.read()
+    input_file.close()
+    treeHeightArray = []
+    treeVisibilityArray = []
+
+    treeRows = input_data.splitlines()
+    for x in range (0, len(treeRows)):
+        treeHeightRow = []
+        visibilityRow = []
+        for y in range (0, len(treeRows[x])):
+            treeHeightRow.append(int(treeRows[x][y]))
+            visibilityRow.append(False)
+        treeHeightArray.append(treeHeightRow)
+        treeVisibilityArray.append(visibilityRow)
+    #look horizontally
+    for x in range(0, len(treeHeightArray)):
+        tallestTree = -1
+        for y in range(0, len(treeHeightArray[x])):
+            if treeHeightArray[x][y] > tallestTree:
+                tallestTree = treeHeightArray[x][y]
+                treeVisibilityArray[x][y] = True
+            else:
+                pass
+    for x in range(0, len(treeHeightArray)):
+        tallestTree = -1
+        for y in range(1, len(treeHeightArray[x])):
+            if treeHeightArray[x][-y] > tallestTree:
+                tallestTree = treeHeightArray[x][-y]
+                treeVisibilityArray[x][-y] = True
+            else:
+                pass
+    #look vertically
+    for y in range(0, len(treeHeightArray[0])):
+        tallestTree = -1
+        for x in range(0, len(treeHeightArray)):
+            if treeHeightArray[x][y] > tallestTree:
+                tallestTree = treeHeightArray[x][y]
+                treeVisibilityArray[x][y] = True
+            else:
+                pass
+    for y in range(0, len(treeHeightArray[0])):
+        tallestTree = -1
+        for x in range(1, len(treeHeightArray)):
+            if(treeHeightArray[-x][y] > tallestTree):
+                tallestTree = treeHeightArray[-x][y]
+                treeVisibilityArray[-x][y] = True
+            else:
+                pass
+    #count visible trees
+    count =0
+    for x in range(0, len(treeVisibilityArray)):
+        for y in range(0, len(treeVisibilityArray[x])):
+            if treeVisibilityArray[x][y] == True:
+                count+=1
+
+    print("there are " + str(count) + " visible trees")
+
+def CalculateScenicViewScore(x, y, treeHeightArray):
+
+    northScore = 0
+    southScore = 0
+    eastScore = 0
+    westScore = 0
+
+
+    #look north
+    for i in range(1, x+1):
+        if treeHeightArray[x-i][y] < treeHeightArray[x][y]:
+            northScore+=1
+        else :
+            northScore+=1
+            break
+
+    #look south
+    for i in range(1, len(treeHeightArray)-x):
+        if treeHeightArray[x+i][y] < treeHeightArray[x][y]:
+            southScore+=1
+        else :
+            southScore+=1
+            break
+
+    #look east
+    for i in range(1, len(treeHeightArray[x])-y):
+        if treeHeightArray[x][y+i] < treeHeightArray[x][y]:
+            eastScore+=1
+        else:
+            eastScore+=1
+            break
+
+    #look west
+    for i in range(1, y+1):
+        if treeHeightArray[x][y-i] < treeHeightArray[x][y]:
+            westScore+=1
+        else:
+            westScore+=1
+            break
+
+    return northScore *southScore *eastScore *westScore
+
+def December8p2(realData):
+
+    treeHeightArray = []
+    scenicViewScoreArray = []
+
+    treeRows = input_data.splitlines()
+    for x in range (0, len(treeRows)):
+        treeHeightRow = []
+        scenicScoreRow = []
+        for y in range (0, len(treeRows[x])):
+            treeHeightRow.append(int(treeRows[x][y]))
+            scenicScoreRow.append(0)
+        treeHeightArray.append(treeHeightRow)
+        scenicViewScoreArray.append(scenicScoreRow)
+        #foreach tree
+    highest = 0
+    for x in range(0, len(treeHeightArray)):
+            for y in range(0, len(treeHeightArray[x])):
+                scenicViewScoreArray[x][y] = CalculateScenicViewScore(x, y, treeHeightArray)
+                if(scenicViewScoreArray[x][y] > highest):
+                    highest = scenicViewScoreArray[x][y]
+    print (highest)
+    # print(treeHeightArray)
+    # print(scenicViewScoreArray)
+#December8p2(True)
+def December10p1(lines):
+    cycles = 1
+    x_value = 1
+    signal_strength_sum = 0
+    for line in lines:
+        line =line.split(" ")
+        if line[0] == "noop":
+            if (cycles +20) %40 ==0:
+                print("x: " + str(x_value)+ " in cycle " + str(cycles))
+                signal_strength_sum+=(x_value*cycles)
+            cycles+=1
+
+        elif line[0] == "addx":
+            for i in range(0, 2):
+                if (cycles +20) %40 ==0:
+                    print("x is " + str(x_value) + " in cycle " + str(cycles))
+                    signal_strength_sum+=(x_value*cycles)
+
+                cycles+=1
+            x_value+=int(line[1])
+
+    print(signal_strength_sum)
+    pass
+def December10p2(lines):
+    cycles = 0
+    x_value = 1
+    output=""
+    for line in lines:
+        line =line.split(" ")
+        if line[0] == "noop":
+            if (cycles%40)-x_value>1 or (cycles%40)-x_value<-1:
+                output+=str(" ")
+            else:
+                output+=str("#")
+            if (cycles%40)==0:
+                #add a break line
+                print(output)
+                output=""
+            cycles+=1
+
+        elif line[0] == "addx":
+            for i in range(0, 2):
+                if (cycles%40)-x_value>1 or (cycles%40)-x_value<-1:
+                    output+=str(" ")
+                else:
+                    output+=str("#")
+                if (cycles%40)==0:
+                    #add a break line
+                    print(output)
+                    output=""
+
+
+                cycles+=1
+            x_value+=int(line[1])
+    print(output)
+    pass
+realData = True
+if realData == True:
+    input_file = open("December10Input", "r")
+else:
+    input_file = open("testInput", "r")
+input_data = input_file.read()
+input_file.close()
+lines = input_data.splitlines()
+
+#December10p1(lines)
+December10p2(lines)
