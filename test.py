@@ -398,14 +398,238 @@ def December10p2(lines):
             x_value+=int(line[1])
     print(output)
     pass
+
+worryLevelMagicNumber=1
+
+class Monkey:
+    items = []
+    operand1 = ""
+    operandSign = ""
+    operand2 = ""
+    divisionNumber = 0
+    trueThrow = 0
+    falseThrow = 0
+    monkeyBussiness = 0
+    def __init__(self, operand1, operand2,operationSign, divisionNumber, trueThrow, falseThrow, items):
+        self.operand1 = operand1
+        self.operand2 = operand2
+        self.operandSign = operationSign
+        self.divisionNumber = divisionNumber
+        self.trueThrow = trueThrow
+        self.falseThrow = falseThrow
+        self.items = items
+
+    def operate(self, monkeyList):
+        #for each item in the list
+        # while the monkey has items
+        while len(self.items) > 0:
+            worryLevel = int(self.items[0])
+            self.items.remove(self.items[0])
+            self.monkeyBussiness +=1
+            #first inspect each item
+            if self.operand1 =="old":
+                firstOperand = int(worryLevel)
+            else:
+                firstOperand = int(self.operand1)
+
+            if self.operand2 =="old":
+                secondOperand = int(worryLevel)
+            else:
+                secondOperand = int(self.operand2)
+
+            if self.operandSign =="+":
+                worryLevel = firstOperand + secondOperand
+            elif self.operandSign =="-":
+                worryLevel = firstOperand - secondOperand
+            elif self.operandSign =="*":
+                worryLevel = firstOperand * secondOperand
+            elif self.operandSign =="/":
+                worryLevel = firstOperand / secondOperand
+            #worryLevel = worryLevel / 3
+            # round to the floor
+            worryLevel = math.floor(worryLevel)
+            global worryLevelMagicNumber
+            if worryLevelMagicNumber%self.divisionNumber==0:
+                pass
+            else:
+                print("magic number is " + str(worryLevelMagicNumber) + " and division number is " + str(self.divisionNumber))
+
+            if(worryLevel > worryLevelMagicNumber):
+                worryLevel-= worryLevelMagicNumber * math.floor( worryLevel/worryLevelMagicNumber)
+            #now evaluate the item
+            if(worryLevel % self.divisionNumber == 0):
+                #throw true
+                monkeyList[self.trueThrow].items.append(worryLevel)
+            else:
+                monkeyList[self.falseThrow].items.append(worryLevel)
+
+
+        pass
+def December11P1(lines):
+    # first build the monkey list
+    monkeyList = []
+    currentItemList = []
+    currentOperationSign = ""
+    currentOperator1 = ""
+    currentOperator2 = ""
+    currentDivisionNumber = 0
+    currentTrueThrow = 0
+    currentFalseThrow = 0
+
+    for line in lines:
+
+        line = line.split(" ")
+        print (line)
+        if(len(line) == 1):
+            monkeyList.append(Monkey(currentOperator1, currentOperator2, currentOperationSign, currentDivisionNumber, currentTrueThrow, currentFalseThrow, currentItemList))
+        elif(line[0] == "Monkey"):
+            currentItemList= []
+            currentOperationSign = ""
+            currenntOperator1 = ""
+            currentOperator2 = ""
+            currentDivisionNumber  = 0
+            currentTrueThrow      = 0
+            currentFalseThrow     = 0
+        elif(line[2] == "Starting"):
+            for i in range(4, len(line)):
+                #remove any "," from the string
+                line[i] = line[i].replace(",", "")
+                currentItemList.append(line[i])
+        elif(line[2] == "Operation:"):
+            currentOperator1 = line[5]
+            currentOperationSign = line[6]
+            currentOperator2 = line[7]
+        elif(line[2] == "Test:"):
+            currentDivisionNumber = int(line[5])
+        elif(line[5] == "true:"):
+            currentTrueThrow = int(line[9])
+        elif(line[5] == "false:"):
+            currentFalseThrow = int(line[9])
+        else:
+            print("error line is " + str(line))
+    monkeyList.append(Monkey(currentOperator1, currentOperator2, currentOperationSign, currentDivisionNumber, currentTrueThrow, currentFalseThrow, currentItemList))
+    for i in range(0, 20):
+        for monkey in monkeyList:
+            #print("monkey " + str(monkey.operand1) + " " + str(monkey.operandSign) + " " + str(monkey.operand2) + " " + str(monkey.divisionNumber) + " " + str(monkey.trueThrow) + " " + str(monkey.falseThrow) + " " + str(monkey.items))
+            monkey.operate(monkeyList)
+    for monkey in monkeyList:
+        print("monkey " + str(monkeyList.index(monkey)) + " has items" + str(monkey.items) + ".")
+
+    monkeyBussinessList = []
+    for monkey in monkeyList:
+        monkeyBussinessList.append(monkey.monkeyBussiness)
+    #sort from highest to lowest
+    monkeyBussinessList.sort(reverse=True)
+    print(monkeyBussinessList)
+    monkeyBussiness = monkeyBussinessList[0]*monkeyBussinessList[1]
+    print ("monkey bussiness is " + str(monkeyBussiness))
+    pass
+def December11P2(lines):
+     # first build the monkey list
+    monkeyList = []
+    currentItemList = []
+    currentOperationSign = ""
+    currentOperator1 = ""
+    currentOperator2 = ""
+    currentDivisionNumber = 0
+    currentTrueThrow = 0
+    currentFalseThrow = 0
+
+    for line in lines:
+
+        line = line.split(" ")
+        #aprint (line)
+        if(len(line) == 1):
+            monkeyList.append(Monkey(currentOperator1, currentOperator2, currentOperationSign, currentDivisionNumber, currentTrueThrow, currentFalseThrow, currentItemList))
+        elif(line[0] == "Monkey"):
+            currentItemList= []
+            currentOperationSign = ""
+            currentOperator1 = ""
+            currentOperator2 = ""
+            currentDivisionNumber  = 0
+            currentTrueThrow      = 0
+            currentFalseThrow     = 0
+        elif(line[2] == "Starting"):
+            for i in range(4, len(line)):
+                #remove any "," from the string
+                line[i] = line[i].replace(",", "")
+                currentItemList.append(line[i])
+        elif(line[2] == "Operation:"):
+            currentOperator1 = line[5]
+            currentOperationSign = line[6]
+            currentOperator2 = line[7]
+        elif(line[2] == "Test:"):
+            currentDivisionNumber = int(line[5])
+            global worryLevelMagicNumber
+            worryLevelMagicNumber *= currentDivisionNumber
+        elif(line[5] == "true:"):
+            currentTrueThrow = int(line[9])
+        elif(line[5] == "false:"):
+            currentFalseThrow = int(line[9])
+        else:
+            print("error line is " + str(line))
+    monkeyList.append(Monkey(currentOperator1, currentOperator2, currentOperationSign, currentDivisionNumber, currentTrueThrow, currentFalseThrow, currentItemList))
+    for i in range(0, 10000):
+        for monkey in monkeyList:
+            #print("monkey " + str(monkey.operand1) + " " + str(monkey.operandSign) + " " + str(monkey.operand2) + " " + str(monkey.divisionNumber) + " " + str(monkey.trueThrow) + " " + str(monkey.falseThrow) + " " + str(monkey.items))
+            monkey.operate(monkeyList)
+        if(i%10 == 0):
+            print("loop number "+ str(i))
+            for monkey in monkeyList:
+                 print("monkey " + str(monkeyList.index(monkey)) + " has items" + str(monkey.items) + ".")
+            pass
+    for monkey in monkeyList:
+        print("monkey " + str(monkeyList.index(monkey)) + " has items" + str(monkey.items) + ".")
+
+    monkeyBussinessList = []
+    for monkey in monkeyList:
+        monkeyBussinessList.append(monkey.monkeyBussiness)
+    #sort from highest to lowest
+    monkeyBussinessList.sort(reverse=True)
+    print(monkeyBussinessList)
+    monkeyBussiness = monkeyBussinessList[0]*monkeyBussinessList[1]
+    print ("monkey bussiness is " + str(monkeyBussiness))
+    pass
+
+
+
 realData = True
 if realData == True:
-    input_file = open("December10Input", "r")
+    input_file = open("December11Input", "r")
 else:
     input_file = open("testInput", "r")
 input_data = input_file.read()
 input_file.close()
 lines = input_data.splitlines()
 
-#December10p1(lines)
-December10p2(lines)
+#December11P1(lines)
+December11P2(lines)
+
+
+
+#method to calculate the number n in the fibonacci sequence
+def fibonacci(n):
+    if n == 0:
+        return 0
+    elif n == 1:
+        return 1
+    else:
+        return fibonacci(n-1) + fibonacci(n-2)
+
+# method to calculate the number n in the factorial sequence
+def factorial(n):
+    if n == 0:
+        return 1
+    else:
+        return n * factorial(n-1)
+# method to find if a number n is prime
+def isPrime(n):
+    if n == 1:
+        return False
+    elif n == 2:
+        return True
+    else:
+        for x in range(2, n):
+            if n % x == 0:
+                return False
+        return True
