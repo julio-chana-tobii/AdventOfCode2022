@@ -3,6 +3,7 @@ import os
 import sys
 import time
 import math
+import sys
 class Directory:
     def __init__(self, name, parent, isDir=True, size=0):
         self.name = name
@@ -210,4 +211,212 @@ def December7P2(real_data):
         print(FindSmallestBigEnoughFileSize(headDirectory, requieredMemory,currentlyusedMemory))
 
 #December7P1(True)
-December7P2(True)
+#December7P2(True)
+headposition = [0,0]
+tailposition = []
+def moveHead(direction):
+    if direction == "U":
+        headposition[1] += 1
+    elif direction == "D":
+        headposition[1] -= 1
+    elif direction == "L":
+        headposition[0] -= 1
+    elif direction == "R":
+        headposition[0] += 1
+    else:
+        print("invalid direction")
+def tailCatchup():
+    delta_x = headposition[0] - tailposition[0]
+    delta_y = headposition[1] - tailposition[1]
+    if delta_x > 1:
+        tailposition[0] += 1
+        if(delta_y>0):
+            tailposition[1] += 1
+        elif(delta_y<0):
+            tailposition[1] -= 1
+    elif delta_x < -1:
+        tailposition[0] -= 1
+        if(delta_y>0):
+            tailposition[1] += 1
+        elif(delta_y<0):
+            tailposition[1] -= 1
+    elif delta_y > 1:
+        tailposition[1] += 1
+        if(delta_x>0):
+            tailposition[0] += 1
+        elif(delta_x<0):
+            tailposition[0] -= 1
+    elif delta_y < -1:
+        tailposition[1] -= 1
+        if(delta_x>0):
+            tailposition[0] += 1
+        elif(delta_x<0):
+            tailposition[0] -= 1
+    
+    return tailposition[0], tailposition[1]
+def tailCatchup9():
+    for i in range(0, 9):
+        if i==0:
+            delta_x = headposition[0] - tailposition[i][0]
+            delta_y = headposition[1] - tailposition[i][1]
+        else:
+            delta_x = tailposition[i-1][0] - tailposition[i][0]
+            delta_y = tailposition[i-1][1] - tailposition[i][1]
+        if delta_x > 1:
+            tailposition[i][0] += 1
+            if(delta_y>0):
+                tailposition[i][1] += 1
+            elif(delta_y<0):
+                tailposition[i][1] -= 1
+        elif delta_x < -1:
+            tailposition[i][0] -= 1
+            if(delta_y>0):
+                tailposition[i][1] += 1
+            elif(delta_y<0):
+                tailposition[i][1] -= 1
+        elif delta_y > 1:
+            tailposition[i][1] += 1
+            if(delta_x>0):
+                tailposition[i][0] += 1
+            elif(delta_x<0):
+                tailposition[i][0] -= 1
+        elif delta_y < -1:
+            tailposition[i][1] -= 1
+            if(delta_x>0):
+                tailposition[i][0] += 1
+            elif(delta_x<0):
+                tailposition[i][0] -= 1
+    return tailposition[8][0], tailposition[8][1]
+
+    pass
+def December9P1(real_data):
+     #read input file
+    if real_data == True:
+        input_file = open("December9Input", "r")
+    else:
+        input_file = open("testInput", "r")
+    input_data = input_file.read()
+    input_file.close()
+    #split input into lines
+    input_data = input_data.splitlines()
+    tailPositions = []
+    for line in input_data:
+        #split by spaces
+        line = line.split(" ")
+        
+        direction = line[0]
+        distance = int(line[1])
+        for i in range(0, distance):
+            moveHead(direction)
+            print("h" + str(headposition))
+            newTailPosition =tailCatchup()
+
+            #if tail is in a new position
+            print("t" + str(newTailPosition))
+            if newTailPosition not in tailPositions:
+                tailPositions.append(newTailPosition)
+
+    print(len(tailPositions))
+        
+def December9P2(real_data):
+    #read input file
+    if real_data == True:
+        input_file = open("December9Input", "r")
+    else:
+        input_file = open("testInput", "r")
+    input_data = input_file.read()
+    input_file.close()
+    #split input into lines
+    input_data = input_data.splitlines()
+    tailPositions = []
+    for i in range(0, 9):
+        tailposition.append([0,0])
+        print(tailposition[i])
+    for line in input_data:
+        #split by spaces
+        line = line.split(" ")
+        
+        direction = line[0]
+        distance = int(line[1])
+        for i in range(0, distance):
+            moveHead(direction)
+            print("h" + str(headposition))
+            newTailPosition =tailCatchup9()
+
+            #if tail is in a new position
+            print("t" + str(newTailPosition))
+            if newTailPosition not in tailPositions:
+                tailPositions.append(newTailPosition)
+    print(len(tailPositions))
+distanceMap =[]
+#December9P2(True)
+def updateNeighborsDisanceToStart(point, map):
+    #check if point is in map
+    global distanceMap
+    if point[0] < 0 or point[0] >= len(map) or point[1] < 0 or point[1] >= len(map[0]):
+        return
+    #check neighbors
+    currentDistance = distanceMap[point[0]][point[1]]
+    newDistance = currentDistance + 1
+    southPoint = [point[0]+1, point[1]]
+    northPoint = [point[0]-1, point[1]]
+    eastPoint = [point[0], point[1]+1]
+    westPoint = [point[0], point[1]-1]
+    pointsToCheck = [southPoint, northPoint, eastPoint, westPoint]
+
+    for pointcheck in pointsToCheck:
+        if pointcheck[0] < 0 or pointcheck[0] >= len(map) or pointcheck[1] < 0 or pointcheck[1] >= len(map[0]):
+            continue
+        deltaHeight = map[pointcheck[0]][pointcheck[1]] - map[point[0]][point[1]]
+        if deltaHeight <= 1:
+            if(newDistance < distanceMap[pointcheck[0]][pointcheck[1]]):
+                distanceMap[pointcheck[0]][pointcheck[1]] = newDistance
+                # print("updating " + str(pointcheck) + " of height "+ str(map[pointcheck[0]][pointcheck[1]])+" to " + str(newDistance))
+                updateNeighborsDisanceToStart(pointcheck, map)
+
+    
+    
+def December12P1(data):
+    data = data.splitlines()
+    heightArray= {"a":0, "b":1, "c":2, "d":3, "e":4, "f":5, "g":6, "h":7, "i":8, "j":9, "k":10, "l":11, "m":12, "n":13, "o":14, "p":15, "q":16, "r":17, "s":18, "t":19, "u":20, "v":21, "w":22, "x":23, "y":24, "z":25, "S":0, "E":25}
+    currentPoint = [0,0]
+    targetPoint = [0,0]
+    map = []
+    for i in range(0, len(data)):
+        map.append([])
+        for j in range(0, len(data[i])):
+            map[i].append(heightArray[data[i][j]])
+            if(data[i][j] == "S"):
+                currentPoint = [i,j]
+            elif(data[i][j] == "E"):
+                targetPoint = [i,j]
+            elif(data[i][j] == "Z"):
+                targetPoint =  [i,j]
+    
+    print (map)
+    global distanceMap
+    for i in range(0, len(data)):
+        distanceMap.append([])
+        for j in range(0, len(data[i])):
+            distanceMap[i].append(10000)
+    distanceMap[currentPoint[0]][currentPoint[1]] = 0
+    print(currentPoint)
+    print(distanceMap[currentPoint[0]][currentPoint[1]])
+    updateNeighborsDisanceToStart(currentPoint, map)
+    print(distanceMap)
+    print(distanceMap[targetPoint[0]][targetPoint[1]])
+
+        
+    pass
+def December12P2(data):
+    pass
+#read input file
+real_data = True
+if real_data == True:
+    input_file = open("December12Input", "r")
+else:
+    input_file = open("testInput", "r")
+input_data = input_file.read()
+input_file.close()
+
+December12P1(input_data)
